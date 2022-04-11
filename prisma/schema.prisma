@@ -9,3 +9,66 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id Int @default(autoincrement()) @id
+  email String @unique
+  password String
+  role Role[] @relation(references: [id])
+  anime Anime[] @relation(references: [id])
+  created_at DateTime @default(now())
+
+ @@map("users") 
+}
+
+model Role {
+  id Int @default(autoincrement()) @id
+  name String @unique
+  description String
+  users User[]
+
+  @@map("roles")
+}
+
+model Anime {
+  id Int @default(autoincrement()) @id
+  date Int
+  name String
+  mangaka Mangaka @relation(fields: [mangaka_id], references: [id])
+  mangaka_id Int
+  director Director @relation(fields: [director_id], references: [id])
+  director_id Int
+  genres Genre[] @relation(references: [id])
+  users User[]
+
+  @@map("animes")
+}
+
+model Director {
+  id Int @default(autoincrement()) @id
+  date Int
+  name String 
+  description String @default("Not descriptions...")
+  anime Anime[] 
+
+  @@map("directors")
+}
+
+model Genre {
+  id Int @default(autoincrement()) @id
+  name String @unique
+  description String
+  animes Anime[]
+  
+  @@map("genres")
+}
+
+model Mangaka {
+  id Int @default(autoincrement()) @id
+  date Int
+  name String
+  description String @default("Ton description...")
+  anime Anime[]
+
+  @@map("mangakas")
+}

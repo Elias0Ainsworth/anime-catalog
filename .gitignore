@@ -3,6 +3,8 @@
 /node_modules
 dockerfile
 .dockerignore
+.env
+/prisma/migrations/**
 
 # Logs
 logs

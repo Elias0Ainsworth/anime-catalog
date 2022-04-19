@@ -1,26 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { PrismaService } from './../prisma/prisma.service';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private readonly prisma: PrismaService){}
+
+  async create(createUserDto: CreateUserDto) {
+    const candidate = await this.prisma.user.findUnique({
+      where : { 
+        email: createUserDto.email 
+      }});
+
+    if(candidate){
+      throw new HttpException('Email is already exist', 400)
+    }
+    const salt: string = await bcrypt.genSalt(); 
+    const hashPassword = await bcrypt.hash(createUserDto.password, salt);
+
+    const user = await this.prisma.user.create({
+      data : {
+        email: createUserDto.email,
+        password: hashPassword,
+      }});
+    
+    return user;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.prisma.user.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return await this.prisma.user.findUnique({where: {id}});
+    
+    
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    if(updateUserDto.password){
+      const salt: string = await bcrypt.genSalt();
+      const hashPassword = await bcrypt.hash(updateUserDto.password, salt);
+      updateUserDto.password = hashPassword;
+    }
+    return await this.prisma.user.update({data: updateUserDto, where: {id}})
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    return await this.prisma.user.delete({where: {id}});
   }
 }

@@ -14,8 +14,8 @@ model User {
   id Int @default(autoincrement()) @id
   email String @unique
   password String
-  role Role[] @relation(references: [id])
-  anime Anime[] @relation(references: [id])
+  role UserRole[]
+  anime AnimeUser[]
   created_at DateTime @default(now())
 
  @@map("users") 
@@ -25,7 +25,7 @@ model Role {
   id Int @default(autoincrement()) @id
   name String @unique
   description String
-  users User[]
+  users UserRole[]
 
   @@map("roles")
 }
@@ -38,8 +38,9 @@ model Anime {
   mangaka_id Int
   director Director @relation(fields: [director_id], references: [id])
   director_id Int
-  genres Genre[] @relation(references: [id])
-  users User[]
+  genres GenreAnime[]
+  users AnimeUser[]
+  image String? @unique
 
   @@map("animes")
 }
@@ -58,7 +59,7 @@ model Genre {
   id Int @default(autoincrement()) @id
   name String @unique
   description String
-  animes Anime[]
+  animes GenreAnime[]
   
   @@map("genres")
 }
@@ -67,8 +68,38 @@ model Mangaka {
   id Int @default(autoincrement()) @id
   date Int
   name String
-  description String @default("Ton description...")
+  description String @default("Not description...")
   anime Anime[]
 
   @@map("mangakas")
+}
+
+model UserRole {
+  userId User @relation(fields: [user_id], references: [id])
+  user_id Int
+  roleId Role @relation(fields: [role_id], references: [id])
+  role_id Int
+
+  @@id([user_id, role_id])
+  @@map("user_role")
+}
+
+model GenreAnime {
+  animeId Anime @relation(fields: [anime_id], references: [id])
+  anime_id Int
+  genreId Genre @relation(fields: [genre_id], references: [id])
+  genre_id Int
+
+  @@id([anime_id, genre_id])
+  @@map("genre_anime")
+}
+
+model AnimeUser{
+  animeId Anime @relation(fields: [anime_id], references: [id])
+  anime_id Int
+  userId User @relation(fields: [user_id], references: [id])
+  user_id Int
+
+  @@id([anime_id, user_id])
+  @@map("user_anime")
 }

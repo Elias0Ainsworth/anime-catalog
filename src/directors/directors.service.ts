@@ -16,7 +16,10 @@ export class DirectorsService {
   }
 
   async findOne(id: number) {
-    return await this.prisma.director.findUnique({where: {id}});
+    return await this.prisma.director.findUnique({
+      where: {id},
+      include: {anime: true}
+    });
   }
 
   async update(id: number, updateDirectorDto: UpdateDirectorDto) {

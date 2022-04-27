@@ -36,7 +36,9 @@ try {
   }
 
   async findAll() {
-    return this.prisma.anime.findMany();
+    return this.prisma.anime.findMany({
+      include: {director: true, mangaka: true}
+    });
   }
 
   async findOne(id: number) {

@@ -16,7 +16,10 @@ export class MangakaService {
   }
 
   async findOne(id: number) {
-    return await this.prisma.mangaka.findUnique({where: {id}});
+    return await this.prisma.mangaka.findUnique({
+      where: {id},
+      include: {anime: true}
+    });
   }
 
   async update(id: number, updateMangakaDto: UpdateMangakaDto) {

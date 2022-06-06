@@ -1,20 +1,32 @@
 import { PrismaService } from './../prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, Req } from '@nestjs/common';
 import { CreateAnimeUserDto } from './dto/create-anime_user.dto';
 
 @Injectable()
 export class AnimeUserService {
   constructor(private readonly prisma: PrismaService){}
 
-  create(createAnimeUserDto: CreateAnimeUserDto) {
-    return this.prisma.animeUser.create({data: createAnimeUserDto});
+  create(createAnimeUserDto: CreateAnimeUserDto, req) {
+    try {
+      return this.prisma.animeUser.create({data: {anime_id: createAnimeUserDto.anime_id, user_id: req.user.id}});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
   findMany(id: number) {
-    return this.prisma.animeUser.findMany({where: {user_id: id}});
+    try {
+      return this.prisma.animeUser.findMany({where: {user_id: id}});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
-  remove(id: number) {
-    return this.prisma.animeUser.delete({where:{anime_id_user_id: {anime_id: id, user_id: id}}});
+  remove(id: number, req) {
+    try {
+      return this.prisma.animeUser.delete({where:{anime_id_user_id: {anime_id: id, user_id: req.user.id}}});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 }

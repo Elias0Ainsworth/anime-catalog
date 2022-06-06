@@ -1,6 +1,5 @@
 import { PrismaService } from './../prisma/prisma.service';
-import { HttpException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { HttpException, Injectable, HttpStatus, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 
@@ -8,47 +7,47 @@ import * as bcrypt from 'bcrypt';
 export class UsersService {
   constructor(private readonly prisma: PrismaService){}
 
-  async create(createUserDto: CreateUserDto) {
-    const candidate = await this.prisma.user.findUnique({
-      where : { 
-        email: createUserDto.email 
-      }});
-
-    if(candidate){
-      throw new HttpException('Email is already exist', 400)
-    }
-    const salt: string = await bcrypt.genSalt(); 
-    const hashPassword = await bcrypt.hash(createUserDto.password, salt);
-
-    const user = await this.prisma.user.create({
-      data : {
-        email: createUserDto.email,
-        password: hashPassword,
-      }});
-    
-    return user;
-  }
-
   async findAll() {
-    return await this.prisma.user.findMany();
+    try {
+      return await this.prisma.user.findMany();
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
   async findOne(id: number) {
-    return await this.prisma.user.findUnique({where: {id}});
+    try {
+      const user = await this.prisma.user.findUnique({where: {id}});
+      const anime = await this.prisma.animeUser.findMany({
+        where: {user_id: id},
+        include: {animeId: true},
+      });
+      return {user: user, userAnime: anime};
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
     
     
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    if(updateUserDto.password){
-      const salt: string = await bcrypt.genSalt();
-      const hashPassword = await bcrypt.hash(updateUserDto.password, salt);
-      updateUserDto.password = hashPassword;
+    try {
+      if(updateUserDto.password){
+        const salt: string = await bcrypt.genSalt();
+        const hashPassword = await bcrypt.hash(updateUserDto.password, salt);
+        updateUserDto.password = hashPassword;
+      }
+      return await this.prisma.user.update({data: updateUserDto, where: {id}})
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
     }
-    return await this.prisma.user.update({data: updateUserDto, where: {id}})
   }
 
   async remove(id: number) {
-    return await this.prisma.user.delete({where: {id}});
+    try {
+      return await this.prisma.user.delete({where: {id}});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 }

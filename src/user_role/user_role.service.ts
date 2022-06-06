@@ -1,5 +1,5 @@
 import { PrismaService } from './../prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserRoleDto } from './dto/create-user_role.dto';
 
 @Injectable()
@@ -7,14 +7,32 @@ export class UserRoleService {
   constructor(private readonly prisma: PrismaService){}
 
   async create(createUserRoleDto: CreateUserRoleDto) {
-    return this.prisma.userRole.create({data: createUserRoleDto});
+    try {
+      return this.prisma.userRole.create({data: createUserRoleDto});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception')
+    }
   }
 
   async findOne(id: number) {
-    return this.prisma.userRole.findMany({where: {user_id: id}});
+   try {
+      return this.prisma.userRole.findMany({
+        where: {user_id: id},
+        include: {userId: true,
+                  roleId: true}
+        });
+   } catch (error) {
+     throw new NotFoundException('Unknown Exception');
+   }
   }
 
   async remove(id: number) {
-    return this.prisma.userRole.delete({where: {user_id_role_id: {user_id: id, role_id: 1} }});
+    try {
+      return this.prisma.userRole.delete({
+        where: {user_id_role_id: {user_id: id, role_id: 1} }
+      });
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 }

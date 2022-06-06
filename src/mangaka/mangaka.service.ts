@@ -1,5 +1,5 @@
 import { PrismaService } from './../prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMangakaDto } from './dto/create-mangaka.dto';
 import { UpdateMangakaDto } from './dto/update-mangaka.dto';
 
@@ -8,25 +8,45 @@ export class MangakaService {
   constructor(private readonly prisma: PrismaService){}
 
   async create(createMangakaDto: CreateMangakaDto) {
-    return await this.prisma.mangaka.create({data: createMangakaDto});
+    try {
+      return await this.prisma.mangaka.create({data: createMangakaDto});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
   async findAll() {
-    return await this.prisma.mangaka.findMany();
+    try {
+      return await this.prisma.mangaka.findMany();
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
   async findOne(id: number) {
-    return await this.prisma.mangaka.findUnique({
-      where: {id},
-      include: {anime: true}
-    });
+    try {
+      return await this.prisma.mangaka.findUnique({
+        where: {id},
+        include: {anime: true}
+      });
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
   async update(id: number, updateMangakaDto: UpdateMangakaDto) {
-    return await this.prisma.mangaka.update({data: updateMangakaDto, where: {id}});
+    try {
+      return await this.prisma.mangaka.update({data: updateMangakaDto, where: {id}});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
   async remove(id: number) {
-    return await this.prisma.mangaka.delete({where: {id}});
+    try {
+      return await this.prisma.mangaka.delete({where: {id}});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 }

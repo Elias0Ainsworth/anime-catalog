@@ -1,5 +1,5 @@
 import { PrismaService } from './../prisma/prisma.service';
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { CreateGenreDto } from './dto/create-genre.dto';
 import { UpdateGenreDto } from './dto/update-genre.dto';
 
@@ -19,23 +19,39 @@ export class GenreService {
       
       return await this.prisma.genre.create({data: createGenreDto});
     } catch (error) {
-      throw new HttpException('Unknown exeptions', HttpStatus.BAD_REQUEST);
+      throw new NotFoundException('Unknown Exception');
     }
   }
 
   async findAll() {
-    return await this.prisma.genre.findMany();
+    try {
+      return await this.prisma.genre.findMany();
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
   async findOne(id: number) {
-    return await this.prisma.genre.findUnique({where: {id}});
+    try {
+      return await this.prisma.genre.findUnique({where: {id}});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
   async update(id: number, updateGenreDto: UpdateGenreDto) {
-    return await this.prisma.genre.update({where: {id}, data: updateGenreDto});
+    try {
+      return await this.prisma.genre.update({where: {id}, data: updateGenreDto});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 
   async remove(id: number) {
-    return await this.prisma.genre.delete({where: {id}});
+    try {
+      return await this.prisma.genre.delete({where: {id}});
+    } catch (error) {
+      throw new NotFoundException('Unknown Exception');
+    }
   }
 }

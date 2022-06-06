@@ -1,4 +1,8 @@
+import { IsNotEmpty, IsNumber } from "class-validator";
+
 export class CreateAnimeUserDto {
-    public user_id: number;
-    public anime_id: number
+
+    @IsNotEmpty()
+    @IsNumber()
+    public anime_id: number;
 }

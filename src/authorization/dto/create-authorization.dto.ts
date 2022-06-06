@@ -1,12 +1,12 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class CreateRoleDto {
+export default class AuthorizationDto {
 
     @IsNotEmpty()
     @IsString()
-    public name: string;
+    email: string;
 
     @IsNotEmpty()
     @IsString()
-    public description: string;
+    password: string;
 }

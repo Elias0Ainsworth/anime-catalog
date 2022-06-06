@@ -9,9 +9,21 @@ import { GenreModule } from './genre/genre.module';
 import { UserRoleModule } from './user_role/user_role.module';
 import { AnimeUserModule } from './anime_user/anime_user.module';
 import { GenreAnimeModule } from './genre_anime/genre_anime.module';
+import { AuthorizationModule } from './authorization/authorization.module';
 
 @Module({
-  imports: [UsersModule, PrismaModule, RoleModule, AnimesModule, MangakaModule, DirectorsModule, GenreModule, UserRoleModule, AnimeUserModule, GenreAnimeModule],
+  imports: [
+    UsersModule, 
+    PrismaModule, 
+    RoleModule, 
+    AnimesModule, 
+    MangakaModule, 
+    DirectorsModule, 
+    GenreModule, 
+    UserRoleModule, 
+    AnimeUserModule, 
+    GenreAnimeModule, 
+    AuthorizationModule],
   controllers: [],
   providers: [],
 })
